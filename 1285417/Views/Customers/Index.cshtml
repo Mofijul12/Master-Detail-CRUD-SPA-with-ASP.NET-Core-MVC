@@ -1,0 +1,302 @@
+﻿@model IEnumerable<_1285417.Models.Customer>
+@{
+    ViewData["Title"] = "Customer Management";
+}
+
+<h1 class="text-center text-primary mb-4">Customer Information Setup</h1>
+
+<div class="container">
+    <form id="customerForm" method="post" asp-action="Save" enctype="multipart/form-data">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Customer Details</h5>
+            </div>
+            <div class="card-body">
+                <input type="hidden" id="customerId" name="customerId" />
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Customer Code</label>
+                    <div class="col-sm-4">
+                        <input type="text" id="customerCode" class="form-control" value="@ViewBag.id" disabled />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" id="name" name="name" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Business Start</label>
+                    <div class="col-sm-4">
+                        <input type="date" id="businessStart" name="businessStart" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Phone</label>
+                    <div class="col-sm-4">
+                        <input type="text" id="phone" name="phone" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-4">
+                        <input type="email" id="email" name="email" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Credit Limit</label>
+                    <div class="col-sm-4">
+                        <input type="text" id="creditDetails" name="creditDetails" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Address</label>
+                    <div class="col-sm-4">
+                        <input type="text" id="address" name="address" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Customer Type</label>
+                    <div class="col-sm-4">
+                        <select id="customerType" name="customerType" class="form-select">
+                            <option value="Dealer">Dealer</option>
+                            <option value="Retailer">Retailer</option>
+                            <option value="Corporate">Corporate</option>
+                            <option value="Export">Export</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label">Photo</label>
+                    <div class="col-sm-4">
+                        <input type="file" id="photoInput" name="photo" class="form-control" onchange="previewImage(event)" accept="image/*" />
+                    </div>
+                    <div class="col-sm-2">
+                        <img id="photoPreview" class="img-thumbnail d-none mt-1" style="width: 60px; height: 60px; object-fit: cover;" />
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <div class="btn-group" role="group">
+                        <button type="submit" id="btnSave" class="btn btn-primary">Save</button>
+                        <button type="submit" id="btnEdit" class="btn btn-success" style="display:none">Update</button>
+                        <button type="button" id="btnDelete" class="btn btn-danger">Delete</button>
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery Address Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Delivery Address Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-sm text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Delivery Address</th>
+                            <th>Contact Person</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deliveryAddressContainer">
+                        <tr class="deliveryAddressRow" id="deliveryAddressRow_0">
+                            <td><input type="text" name="DeliveryAddresses[0].Address" class="form-control form-control-sm" required /></td>
+                            <td><input type="text" name="DeliveryAddresses[0].ContactPerson" class="form-control form-control-sm" required /></td>
+                            <td><input type="text" name="DeliveryAddresses[0].Phone" class="form-control form-control-sm" required /></td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btnRemoveDeliveryAddress">Delete</button>
+                                <button type="button" class="btn btn-success btn-sm btnAddDeliveryAddress">Add</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+
+    <!-- Customer List -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Customer List</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped table-sm text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Customer Id</th>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Customer Type</th>
+                            <th>Bus. Start</th>
+                            <th>Credit Limit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var customer in Model)
+                        {
+                            <tr onclick="editCustomer(@customer.CustomerId)" style="cursor:pointer">
+                                <td>@customer.CustomerId</td>
+                                <td>@customer.Name</td>
+                                <td>@customer.Address</td>
+                                <td>@customer.CustomerType</td>
+                                <td>@customer.BusinessStart.ToString("yyyy-MM-dd")</td>
+                                <td>@customer.CreditDetails</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('photoPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        let addressCount = 1;
+        document.getElementById('deliveryAddressContainer').addEventListener('click', function (e) {
+            if (e.target.classList.contains('btnAddDeliveryAddress')) {
+                const newRow = document.createElement('tr');
+                newRow.classList.add('deliveryAddressRow');
+                newRow.innerHTML = `
+                    <td><input type="text" name="DeliveryAddresses[${addressCount}].Address" class="form-control form-control-sm" required /></td>
+                    <td><input type="text" name="DeliveryAddresses[${addressCount}].ContactPerson" class="form-control form-control-sm" required /></td>
+                    <td><input type="text" name="DeliveryAddresses[${addressCount}].Phone" class="form-control form-control-sm" required /></td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm btnRemoveDeliveryAddress">Delete</button>
+                        <button type="button" class="btn btn-success btn-sm btnAddDeliveryAddress">Add</button>
+                    </td>`;
+                document.getElementById('deliveryAddressContainer').appendChild(newRow);
+                addressCount++;
+            }
+
+            if (e.target.classList.contains('btnRemoveDeliveryAddress')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        function editCustomer(customerId) {
+            $.ajax({
+                url: '/Customers/GetCustomer',
+                type: 'GET',
+                data: { id: customerId },
+                success: function (response) {
+                    if (response) {
+                        $("#customerId").val(response.customerId);
+                        $("#name").val(response.name);
+                        $("#businessStart").val(response.businessStart.split('T')[0]);
+                        $("#creditDetails").val(response.creditDetails);
+                        $("#phone").val(response.phone);
+                        $("#email").val(response.email);
+                        $("#customerType").val(response.customerType);
+                        $("#address").val(response.address);
+
+                        if (response.photo) {
+                            $("#photoPreview").attr("src", "/Uploads/" + response.photo).removeClass("d-none");
+                        } else {
+                            $("#photoPreview").addClass("d-none");
+                        }
+
+                        $("#deliveryAddressContainer").empty();
+                        addressCount = 0;
+                        response.deliveryAddresses.forEach((address, index) => {
+                            const row = `
+                                <tr class="deliveryAddressRow">
+                                    <td><input type="text" name="DeliveryAddresses[${index}].Address" class="form-control form-control-sm" value="${address.address}" required /></td>
+                                    <td><input type="text" name="DeliveryAddresses[${index}].ContactPerson" class="form-control form-control-sm" value="${address.contactPerson}" required /></td>
+                                    <td><input type="text" name="DeliveryAddresses[${index}].Phone" class="form-control form-control-sm" value="${address.phone}" required /></td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm btnRemoveDeliveryAddress">Delete</button>
+                                        <button type="button" class="btn btn-success btn-sm btnAddDeliveryAddress">Add</button>
+                                    </td>
+                                </tr>`;
+                            $("#deliveryAddressContainer").append(row);
+                            addressCount++;
+                        });
+
+                        $("#btnSave").hide();
+                        $("#btnEdit").show();
+                    }
+                }
+            });
+        }
+
+        document.getElementById("btnDelete").addEventListener("click", async () => {
+            const customerId = document.getElementById("customerId").value;
+            if (!customerId || customerId == 0) return alert("Please select a valid customer to delete!!");
+
+            if (confirm("Are you sure to delete this customer?")) {
+                try {
+                    const response = await fetch(`/Customers/Delete/${customerId}`, { method: "POST" });
+                    if (!response.ok) throw new Error("Failed to delete customer!!");
+
+                    alert("Customer deleted!!!");
+                    window.location.href = "/Customers/Index";
+                } catch (err) {
+                    alert(err.message);
+                }
+            }
+        });
+
+            document.querySelector('button[type="reset"]').addEventListener('click', function () {
+
+            document.getElementById("customerId").value = "";
+            document.getElementById("customerCode").value = "@ViewBag.id";
+            document.getElementById("name").value = "";
+            document.getElementById("businessStart").value = "";
+            document.getElementById("phone").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("creditDetails").value = "";
+            document.getElementById("address").value = "";
+            document.getElementById("customerType").selectedIndex = 0;
+            document.getElementById("photoInput").value = "";
+            document.getElementById("photoPreview").classList.add("d-none");
+            document.getElementById("photoPreview").src = "";
+
+            const container = document.getElementById("deliveryAddressContainer");
+            container.innerHTML = `
+                <tr class="deliveryAddressRow" id="deliveryAddressRow_0">
+                    <td><input type="text" name="DeliveryAddresses[0].Address" class="form-control form-control-sm" required /></td>
+                    <td><input type="text" name="DeliveryAddresses[0].ContactPerson" class="form-control form-control-sm" required /></td>
+                    <td><input type="text" name="DeliveryAddresses[0].Phone" class="form-control form-control-sm" required /></td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm btnRemoveDeliveryAddress">Delete</button>
+                        <button type="button" class="btn btn-success btn-sm btnAddDeliveryAddress">Add</button>
+                    </td>
+                </tr>
+            `;
+            addressCount = 1;
+
+            document.getElementById("btnSave").style.display = "inline-block";
+            document.getElementById("btnEdit").style.display = "none";
+        });
+    </script>
+}
